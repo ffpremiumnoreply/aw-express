@@ -176,7 +176,8 @@ async function mine(DATA){
         console.log(`Using WAM account`);
     }
     
-    const start = (new Date()).getTime();
+    start = (new Date()).getTime();
+    end   = (new Date()).getTime();
     
     while (!good){
         
@@ -227,8 +228,9 @@ async function mine(DATA){
         }; 
 
     }; 
+	
+	end = (new Date()).getTime();
     
-    const end       = (new Date()).getTime();
     const rand_str  = toHex(rand_arr);
     
     console.log(`Found hash in ${itr} iterations with ${account} ${rand_str}, last = ${last}, hex_digest ${hex_digest} taking ${(end-start) / 1000}s`)
