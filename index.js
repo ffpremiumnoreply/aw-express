@@ -1,4 +1,5 @@
 const crypto                                = require('crypto');
+const { Api, JsonRpc, Serialize }           = require('eosjs');
 const fetch                                 = require('node-fetch');
 const { TextEncoder, TextDecoder }          = require('text-encoding');
 const url                                   = require('url');
@@ -210,13 +211,16 @@ async function mine(DATA){
         
         if (itr % 10000 === 0){
             console.log(`Still mining - tried ${itr} iterations ${((new Date()).getTime()-start) / 1000}s`);
+			end = (new Date()).getTime();
         }; 
         
         if (!good){
             hash = null;
         }; 
         
-        if (itr >= 100000 * 4){
+        if (
+			itr >= 100000 * 4 || (end-start) / 1000 >= 10
+		){
             rand_arr    = ''; 
             hex_digest  = `SORRY WE CAN NOT SOLVED LOOP ${ itr }`; 
             break; 
