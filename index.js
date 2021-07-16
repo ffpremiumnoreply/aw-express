@@ -220,7 +220,7 @@ async function mine(DATA){
         }; 
         
         if (
-		    	itr >= 100000 * 4 || (end-start) / 1000 >= (90 / difficulty)
+		    	itr >= 100000 * 8 || (end-start) / 1000 >= (90 / difficulty)
 		    ){
             rand_arr    = ''; 
             hex_digest  = `SORRY WE CAN NOT SOLVED LOOP ${ itr }`; 
