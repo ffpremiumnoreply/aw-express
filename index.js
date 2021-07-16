@@ -82,7 +82,7 @@ app.get("/trace", (req, res) => {
 		res.write(`<pre>${ result }</pre>`); 
 		res.write("</body>"); 
 		res.write("<html>"); 
-        res.end();
+    res.end(); process.exit()
 	});
 });
 // Listen on port 5000
