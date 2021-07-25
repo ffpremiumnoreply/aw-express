@@ -161,7 +161,7 @@ async function mine(DATA){
     /*! GET PARAM FROM DATA !*/ mining_account  = 'm.federation'; 
     /*! GET PARAM FROM DATA !*/ account         = nameToArray( DATA.waxaccount ); // [0, 0, 144, 134, 3, 126, 33, 0]; 
     /*! GET PARAM FROM DATA !*/ account_str     = DATA.waxaccount ; 
-    /*! GET PARAM FROM DATA !*/ difficulty      = DATA.difficulty; 
+    /*! GET PARAM FROM DATA !*/ difficulty      = (DATA.difficulty || 1); 
     /*! GET PARAM FROM DATA !*/ last_mine_tx    = DATA.lastMineTx.substr(0, 16); 
     /*! GET PARAM FROM DATA !*/ last_mine_arr   = unHex(last_mine_tx); 
     
