@@ -1,96 +1,99 @@
 const crypto                                = require('crypto');
 const { Api, JsonRpc, Serialize }           = require('eosjs');
 const fetch                                 = require('node-fetch');
+const cpus                                  = require('os').cpus();
+const cluster                               = require('cluster');
 const { TextEncoder, TextDecoder }          = require('text-encoding');
 const url                                   = require('url');
 const fs                                    = require('fs'); 
 const express                               = require("express");
 
-const app   = express(); 
-const port  = 5000; 
+const app       = express(); 
+const port      = 5000; 
+const nodeType  = (cluster.isMaster) ? 'Master' : 'Worker';
 
-
-// Body parser
 app.use(express.urlencoded({ extended: false }));
 
-// Home route
-app.get("/", (req, res) => {
-    
-    //  sets the header of the response to the user and the type of response that you would be sending back
-    res.setHeader('Content-Type', 'text/html');
-    res.write("<html>"); 
-    res.write("<head>"); 
-    res.write("<title>now-express</title>"); 
-    res.write("</head>"); 
-    res.write("<body>"); 
-    res.write("<h1>now-express</h1>"); 
-    res.write("</body>"); 
-    res.write("<html>"); 
-    res.end(); 
-    
-});
-
-// echo route
-app.get("/echo", (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
-    res.end(`ECHO : ${req.url }`);
-});
-
-// mine API
-app.get("/mine", (req, res) => {
-    if(
-        req.url.match('mine') && 
-        req.url.match('waxaccount') && 
-        req.url.match('difficulty') && 
-        req.url.match('lastMineTx') && 
-        url.parse(req.url,true).query && 
-        url.parse(req.url,true).query.waxaccount && 
-        url.parse(req.url,true).query.difficulty && 
-        url.parse(req.url,true).query.lastMineTx
-    ){
-        
-        console.log( req.url ); 
-        console.log( url.parse(req.url,true).query.waxaccount ); 
-        mine({
-            'waxaccount' : url.parse(req.url,true).query.waxaccount, 
-            'difficulty' : url.parse(req.url,true).query.difficulty, 
-            'lastMineTx' : url.parse(req.url,true).query.lastMineTx
-        }).then(result => {
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(result));
-        }); 
-        
-    }else{
-        res.setHeader('Content-Type', 'text/html');
-        res.send('?');
+if (cluster.isMaster) {
+    for (let i = 0; i < (cpus.length * 2); i++) {
+        cluster.fork();
     }; 
-});
+    cluster.on('exit', (worker, code, signal) => {
+        console.log('Worker #' + worker.process.pid, 'exited');
+        cluster.fork();
+    }); 
+} else {
 
-app.get("/trace", (req, res) => {
-	fetch(
-		'https://www.cloudflare.com/cdn-cgi/trace'
-	).then(
-		result => result.text()
-	).then(result => {
-		console.log(result)
-		res.setHeader('Content-Type', 'text/html');
-		res.write("<html>"); 
-		res.write("<head>"); 
-		res.write("<title>trace</title>"); 
-		res.write("</head>"); 
-		res.write("<body>"); 
-		res.write(`<pre>${ result }</pre>`); 
-		res.write("</body>"); 
-		res.write("<html>"); 
-    res.end(); process.exit()
-	});
-});
-// Listen on port 5000
-app.listen(port, () => {
-    console.log(`Server is booming on port 5000 Visit http://localhost:5000`);
-});
+    app.get("/", (req, res) => {
+        res.setHeader('Content-Type', 'text/html');
+        res.write("<html>"); 
+        res.write("<head>"); 
+        res.write(`<title>now-express</title>`); 
+        res.write("</head>"); 
+        res.write("<body>"); 
+        res.write(`<h1>now-express ${ process.pid }</h1>`); 
+        res.write("</body>"); 
+        res.write("<html>"); 
+        res.end(); 
+    });
+    
+    app.get("/mine", (req, res) => {
+        if(
+            req.url.match('mine') && 
+            req.url.match('waxaccount') && 
+            req.url.match('difficulty') && 
+            req.url.match('lastMineTx') && 
+            url.parse(req.url,true).query && 
+            url.parse(req.url,true).query.waxaccount && 
+            url.parse(req.url,true).query.difficulty && 
+            url.parse(req.url,true).query.lastMineTx
+        ){
+            
+            console.log( req.url ); 
+            console.log( url.parse(req.url,true).query.waxaccount ); 
+            mine({
+                'waxaccount' : url.parse(req.url,true).query.waxaccount, 
+                'difficulty' : url.parse(req.url,true).query.difficulty, 
+                'lastMineTx' : url.parse(req.url,true).query.lastMineTx
+            }).then(result => {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(result));
+            }); 
+            
+        }else{
+            res.setHeader('Content-Type', 'text/html');
+            res.send('?');
+        }; 
+    });
+    
+    app.get("/trace", (req, res) => {
+        fetch(
+            'https://www.cloudflare.com/cdn-cgi/trace'
+        ).then(
+            result => result.text()
+        ).then(result => {
+            console.log(result)
+            res.setHeader('Content-Type', 'text/html');
+            res.write("<html>"); 
+            res.write("<head>"); 
+            res.write("<title>trace</title>"); 
+            res.write("</head>"); 
+            res.write("<body>"); 
+            res.write(`<pre>${ result }</pre>`); 
+            res.write("</body>"); 
+            res.write("<html>"); 
+        res.end(); process.exit()
+        });
+    });
+    
+    // Listen on port 5000
+    app.listen(port, () => {
+        console.log(`Server is booming on port 5000 Visit http://localhost:5000`);
+    }); 
+    
+}; 
 
-
+console.log(nodeType + ' #' + process.pid, 'is running');
 
 
 
@@ -212,7 +215,7 @@ async function mine(DATA){
         
         if (itr % 10000 === 0){
             console.log(`Still mining - tried ${itr} iterations ${((new Date()).getTime()-start) / 1000}s`);
-			end = (new Date()).getTime();
+            end = (new Date()).getTime();
         }; 
         
         if (!good){
@@ -228,27 +231,19 @@ async function mine(DATA){
         }; 
 
     }; 
-	
-	end = (new Date()).getTime();
+    
+    end = (new Date()).getTime();
     
     const rand_str  = toHex(rand_arr);
     
     console.log(`Found hash in ${itr} iterations with ${account} ${rand_str}, last = ${last}, hex_digest ${hex_digest} taking ${(end-start) / 1000}s`)
     const mine_work     = {account:account_str, nonce:rand_str, answer:hex_digest}; 
     
-    //  this.postMessage(mine_work); 
-    //  return mine_work; 
-
     console.log( mine_work ); 
     
     return new Promise(function(resolve, reject) {
         resolve({account:account_str, nonce:rand_str, answer:hex_digest}); 
     });
-    
-    //  return new Promise(function(resolve, reject) {
-    //      setTimeout(function(){
-    //      }, 21500); 
-    //  });
 }; 
 
 function arrayToHex(data) {
