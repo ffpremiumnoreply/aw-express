@@ -197,18 +197,21 @@ async function mine(DATA){
         
         //  console.log( `${itr} ${hex_digest}\n ` ); 
         
-        if (is_wam){
-            good = hex_digest.substr(0, 4) === '0000';
-        } else {
-            good = hex_digest.substr(0, 6) === '000000';
-        }; 
+        //  if (is_wam){
+        //      good = hex_digest.substr(0, 4) === '0000';
+        //  } else {
+        //      good = hex_digest.substr(0, 6) === '000000';
+        //  }; 
+        good = hex_digest.substr(0, 4) === '0000';
         
         if (good){
-            if (is_wam){
-                last = parseInt(hex_digest.substr(4, 1), 16);
-            } else {
-                last = parseInt(hex_digest.substr(6, 1), 16);
-            }; good &= (last <= difficulty);
+            //  if (is_wam){
+            //      last = parseInt(hex_digest.substr(4, 1), 16);
+            //  } else {
+            //      last = parseInt(hex_digest.substr(6, 1), 16);
+            //  }; 
+            last = parseInt(hex_digest.substr(4, 1), 16);
+            good &= (last <= difficulty);
         }; 
         
         itr++;
@@ -218,9 +221,9 @@ async function mine(DATA){
             end = (new Date()).getTime();
         }; 
         
-        if (!good){
-            hash = null;
-        }; 
+        //  if (!good){
+        //      hash = null;
+        //  }; 
         
         if (
             itr >= 100000 * 8 || (end-start) / 1000 >= (60 / (Number(difficulty) || 1))
