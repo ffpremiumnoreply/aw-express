@@ -9,7 +9,6 @@ const fs                                    = require('fs');
 const express                               = require("express");
 
 const app       = express(); 
-const port      = 5000; 
 const nodeType  = (cluster.isMaster) ? 'Master' : 'Worker';
 
 app.use(express.urlencoded({ extended: false }));
@@ -87,8 +86,8 @@ if (cluster.isMaster) {
     });
     
     // Listen on port 5000
-    app.listen(port, () => {
-        console.log(`Server is booming on port 5000 Visit http://localhost:5000`);
+    app.listen(3000, () => {
+        console.log(`Server is booming on port 5000 Visit http://localhost:3000`);
     }); 
     
 }; 
