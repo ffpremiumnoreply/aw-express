@@ -1,4 +1,5 @@
 const crypto                                = require('crypto');
+const sha256                                = require('js-sha256').sha256;
 const { Api, JsonRpc, Serialize }           = require('eosjs');
 const fetch                                 = require('node-fetch');
 const cpus                                  = require('os').cpus();
@@ -190,7 +191,8 @@ async function mine(DATA){
         combined.set(last_mine_arr, account.length);
         combined.set(rand_arr, account.length + last_mine_arr.length);
 
-        hash = await crypto.createHash('sha256').update( combined.slice(0, 24) ).digest('Uint8Array');
+        //  hash = await crypto.createHash('sha256').update( combined.slice(0, 24) ).digest('Uint8Array'); 
+        hash = await sha256.create().update( combined.slice(0, 24) ).digest('Uint8Array'); 
 
         hex_digest = toHex(hash);
         
