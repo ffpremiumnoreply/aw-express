@@ -198,20 +198,20 @@ async function mine(DATA){
         
         //  console.log( `${itr} ${hex_digest}\n ` ); 
         
-        //  if (is_wam){
-        //      good = hex_digest.substr(0, 4) === '0000';
-        //  } else {
-        //      good = hex_digest.substr(0, 6) === '000000';
-        //  }; 
-        good = hex_digest.substr(0, 4) === '0000';
+        if (is_wam){
+            good = hex_digest.substr(0, 4) === '0000';
+        } else {
+            good = hex_digest.substr(0, 6) === '000000';
+        }; 
+        //  good = hex_digest.substr(0, 4) === '0000';
         
         if (good){
-            //  if (is_wam){
-            //      last = parseInt(hex_digest.substr(4, 1), 16);
-            //  } else {
-            //      last = parseInt(hex_digest.substr(6, 1), 16);
-            //  }; 
-            last = parseInt(hex_digest.substr(4, 1), 16);
+            if (is_wam){
+                last = parseInt(hex_digest.substr(4, 1), 16);
+            } else {
+                last = parseInt(hex_digest.substr(6, 1), 16);
+            }; 
+            //  last = parseInt(hex_digest.substr(4, 1), 16);
             good &= (last <= difficulty);
         }; 
         
