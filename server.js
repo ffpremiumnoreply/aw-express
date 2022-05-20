@@ -137,8 +137,9 @@ async function mine(DATA){
     const getRand = () => {
         const arr = new Uint8Array(8); 
         for (let i=0; i < 8; i++){
-            const rand = Math.floor(Math.random() * 255); 
-            arr[i] = rand; 
+            //    const rand = Math.floor(Math.random() * 255); 
+            //    arr[i] = rand; 
+            arr[i] = Math.floor(Math.random() * 255)
         }; return arr; 
     }; 
     const toHex = (buffer) => {
@@ -152,6 +153,9 @@ async function mine(DATA){
             arr[i] = parseInt(hexed.slice(i*2, (i+1)*2), 16); 
         }; return arr; 
     }; 
+    const fromHexString = (hexString) => new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)))
+
+
 
     //    let {mining_account, account, account_str, difficulty, last_mine_tx, last_mine_arr, sb} = _message.data;
     
@@ -166,7 +170,9 @@ async function mine(DATA){
     /*! GET PARAM FROM DATA !*/ account_str     = DATA.waxaccount ; 
     /*! GET PARAM FROM DATA !*/ difficulty      = DATA.difficulty; 
     /*! GET PARAM FROM DATA !*/ last_mine_tx    = DATA.lastMineTx.substr(0, 16); 
-    /*! GET PARAM FROM DATA !*/ last_mine_arr   = unHex(last_mine_tx); 
+    //    /*! GET PARAM FROM DATA !*/ last_mine_arr  = unHex(last_mine_tx); 
+    /*! GET PARAM FROM DATA !*/ last_mine_arr   = fromHexString(last_mine_tx); 
+    console.log('NEW', last_mine_arr, last_mine_arr.length)
     
     account = account.slice(0, 8);
     
